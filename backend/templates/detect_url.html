@@ -1,31 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PHISHGUARD – URL Phishing Detector</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 30px; }
-        input[type="text"] { width: 100%; padding: 8px; }
-        .result { margin-top: 20px; padding: 10px; border-radius: 5px; }
-        .phishing { background: #ffe5e5; color: #b30000; }
-        .legit { background: #e5ffe5; color: #006600; }
-    </style>
+<title>🛡️ PHISHGUARD v2.0 - AI Phishing Shield</title>
+<meta name="viewport" content="width=device-width">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body { 
+  background: linear-gradient(135deg, #0c0c0c 0%, #1a0033 50%, #000 100%);
+  min-height:100vh; font-family:'Orbitron',monospace; color:#00ff88;
+  overflow-x:hidden;
+}
+.container { max-width:800px; margin:0 auto; padding:20px; text-align:center; }
+.header { 
+  font-size:3em; font-weight:900; text-shadow:0 0 20px #00ff88;
+  animation: glow 2s ease-in-out infinite alternate; margin-bottom:30px;
+}
+@keyframes glow { 0%{text-shadow:0 0 20px #00ff88;} 100%{text-shadow:0 0 40px #00ff88,0 0 60px #00ff88;} }
+.scan-box { 
+  background: rgba(0,255,136,0.1); border:2px solid #00ff88; border-radius:15px;
+  padding:30px; backdrop-filter:blur(10px); transition:all 0.3s ease;
+}
+.scan-box:focus-within { box-shadow:0 0 50px #00ff88; transform:scale(1.02); }
+input[type="text"] { 
+  width:100%; padding:20px; font-size:1.2em; font-family:'Orbitron',monospace;
+  background:rgba(0,0,0,0.8); border:1px solid #00ff88; border-radius:10px;
+  color:#00ff88; outline:none; transition:all 0.3s; 
+}
+input[type="text"]:focus { box-shadow:0 0 20px #00ff88; }
+.btn-scan { 
+  background:linear-gradient(45deg,#00ff88,#00cc66); border:none; padding:15px 40px;
+  font-size:1.3em; font-weight:700; border-radius:50px; cursor:pointer;
+  margin-top:20px; transition:all 0.3s; text-transform:uppercase;
+}
+.btn-scan:hover { transform:scale(1.1); box-shadow:0 10px 30px rgba(0,255,136,0.5); }
+.result { margin-top:30px; padding:25px; border-radius:15px; font-size:1.5em; }
+.phishing { 
+  background:linear-gradient(45deg,#ff0040,#cc0033); 
+  animation: pulse-red 1s infinite; color:white; 
+}
+.legit { 
+  background:linear-gradient(45deg,#00ff88,#00cc66); 
+  animation: pulse-green 1s infinite; color:black; 
+}
+@keyframes pulse-red { 0%,100%{opacity:1;} 50%{opacity:0.7;} }
+@keyframes pulse-green { 0%,100%{opacity:1;} 50%{opacity:0.9;} }
+.confidence { font-size:2em; font-weight:900; margin-top:10px; }
+.matrix { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:-1; }
+.matrix::before { content:""; position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(circle at 20% 80%,rgba(120,119,198,0.3) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(120,119,198,0.3) 0%,transparent 50%),radial-gradient(circle at 40% 40%,rgba(120,119,198,0.2) 0%,transparent 50%); animation:matrix 20s linear infinite; }
+@keyframes matrix { 0%{transform:translateY(0) rotate(0deg);} 100%{transform:translateY(-100px) rotate(360deg);} }
+.stats { display:flex; justify-content:space-around; margin-top:40px; font-size:0.9em; }
+.stat { background:rgba(0,255,136,0.2); padding:10px 20px; border-radius:20px; }
+@media (max-width:600px) { .header{font-size:2em;} .scan-box{padding:20px;} }
+</style>
 </head>
 <body>
-    <h1>PHISHGUARD: URL Phishing Detector</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="url">Enter or paste URL:</label><br>
-        <input type="text" name="url" id="url" value="{{ url }}"><br><br>
-        <button type="submit">Analyze</button>
-    </form>
-
-    {% if prediction %}
-        <div class="result {% if 'Phishing' in prediction %}phishing{% else %}legit{% endif %}">
-            <h3>Result: {{ prediction }}</h3>
-            {% if prob %}
-                <p>Confidence: {{ prob }}%</p>
-            {% endif %}
-        </div>
+<div class="matrix"></div>
+<div class="container">
+  <h1 class="header">🛡️ PHISHGUARD v2.0</h1>
+  <p style="font-size:1.2em; margin-bottom:30px;">AI-Powered Phishing Detection</p>
+  
+  <form method="post" class="scan-box">
+    {% csrf_token %}
+    <label style="display:block; margin-bottom:15px; font-size:1.1em;">🔍 Enter URL to Scan:</label>
+    <input type="text" name="url" id="url" value="{{ url }}" placeholder="https://fakebank-login.com/update...">
+    <button type="submit" class="btn-scan">🚀 SCAN NOW</button>
+  </form>
+  
+  {% if prediction %}
+  <div class="result {% if 'Phishing' in prediction %}phishing{% else %}legit{% endif %}">
+    <h2>⚡ RESULT: {{ prediction }}</h2>
+    {% if prob %}
+    <div class="confidence">Confidence: {{ prob }}%</div>
     {% endif %}
+  </div>
+  {% endif %}
+  
+
+</div>
 </body>
 </html>
