@@ -1,25 +1,53 @@
-<h2>Inbox Scan Results</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PHISHGUARD - Inbox Scan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin:0; padding:0; }
+        .container { max-width:700px; margin:40px auto; padding:20px; background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+        h1 { text-align:center; margin-bottom:20px;}
+        nav { text-align:center; margin-bottom:20px; }
+        nav a { margin:0 10px; text-decoration:none; color:#007BFF;}
+        nav a:hover { text-decoration:underline;}
+        form input, form button { padding:10px; margin:5px 0; font-size:1em; border-radius:4px; }
+        form button { background:#007BFF; color:#fff; border:none; cursor:pointer; }
+        form button:hover { background:#0056b3; }
+        ul { padding-left:20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>PHISHGUARD - Inbox Scan</h1>
+    
+    <nav>
+        <a href="{% url 'detect_url' %}">Scan URL / Email Text</a> |
+        <a href="{% url 'scan_inbox' %}">Scan Inbox</a>
+    </nav>
 
-{% if error %}
-<p style="color:red">{{ error }}</p>
-{% endif %}
+    {% if error %}
+        <p style="color:red">{{ error }}</p>
+    {% endif %}
 
-<form method="post">{% csrf_token %}
-    IMAP Server: <input type="text" name="imap_server" value="imap.gmail.com"><br>
-    Email: <input type="email" name="email_account"><br>
-    App Password: <input type="password" name="app_password"><br>
-    Number of emails: <input type="number" name="num_emails" value="10"><br>
-    <button type="submit">Scan Inbox</button>
-</form>
+    <form method="post">{% csrf_token %}
+        IMAP Server: <input type="text" name="imap_server" value="imap.gmail.com"><br>
+        Email: <input type="email" name="email_account"><br>
+        App Password: <input type="password" name="app_password"><br>
+        Number of emails: <input type="number" name="num_emails" value="10"><br>
+        <button type="submit">Scan Inbox</button>
+    </form>
 
-{% if results %}
-    <h3>Results</h3>
-    {% for email in results %}
-        <p><b>Subject:</b> {{ email.subject }} | <b>Sender:</b> {{ email.sender }} | <b>Email Risk:</b> {{ email.email_risk }}</p>
-        <ul>
-            {% for url in email.urls %}
-                <li>{{ url.url }} → {{ url.pred }} ({{ url.prob }}%) → Risk: {{ url.risk }}</li>
-            {% endfor %}
-        </ul>
-    {% endfor %}
-{% endif %}
+    {% if results %}
+        <h3>Results</h3>
+        {% for email in results %}
+            <p><b>Subject:</b> {{ email.subject }} | <b>Sender:</b> {{ email.sender }} | <b>Email Risk:</b> {{ email.email_risk }}</p>
+            <ul>
+                {% for url in email.urls %}
+                    <li>{{ url.url }} → {{ url.prediction }} ({{ url.prob }}%) → Risk: {{ url.risk }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% endif %}
+</div>
+</body>
+</html>

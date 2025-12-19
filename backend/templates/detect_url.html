@@ -23,12 +23,24 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
         form {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-        input[type="text"] {
+        input[type="text"], textarea {
             padding: 10px;
             font-size: 1em;
             border: 1px solid #ccc;
@@ -94,9 +106,13 @@
 <div class="container">
     <h1>PHISHGUARD - AI Phishing Detection</h1>
     
+    <nav>
+        <a href="{% url 'detect_url' %}">Scan URL / Email Text</a> |
+        <a href="{% url 'scan_inbox' %}">Scan Inbox</a>
+    </nav>
+    
     <form method="post">
         {% csrf_token %}
-
         <label>Enter URL to Scan:</label>
         <input type="text" name="url" value="{{ url }}" placeholder="https://example.com/login">
 
@@ -106,7 +122,6 @@
         <button type="submit">Scan</button>
     </form>
     
-
     {% if scan_logs %}
     <h3>Scan Results</h3>
     <table>
