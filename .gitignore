@@ -1,7 +1,28 @@
+# Python
 __pycache__/
 *.pyc
-.DS_Store
+*.pyo
+*.log
+
+# Virtual environments
 venv/
 env/
+.env
+
+# OS
+.DS_Store
+
+# Django
 db.sqlite3
-*.log
+*.sqlite3
+staticfiles/
+media/
+
+# Python tools
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+
+# ML temp artifacts
+*.joblib
+*.tmp
