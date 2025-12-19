@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PHISHGUARD – URL Phishing Detector</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        input[type="text"] { width: 100%; padding: 8px; }
+        .result { margin-top: 20px; padding: 10px; border-radius: 5px; }
+        .phishing { background: #ffe5e5; color: #b30000; }
+        .legit { background: #e5ffe5; color: #006600; }
+    </style>
+</head>
+<body>
+    <h1>PHISHGUARD: URL Phishing Detector</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="url">Enter or paste URL:</label><br>
+        <input type="text" name="url" id="url" value="{{ url }}"><br><br>
+        <button type="submit">Analyze</button>
+    </form>
+
+    {% if prediction %}
+        <div class="result {% if 'Phishing' in prediction %}phishing{% else %}legit{% endif %}">
+            <h3>Result: {{ prediction }}</h3>
+            {% if prob %}
+                <p>Confidence: {{ prob }}%</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</body>
+</html>

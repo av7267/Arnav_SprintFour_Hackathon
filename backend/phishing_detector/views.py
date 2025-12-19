@@ -1,40 +1,35 @@
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from ml_model.predict import detect_phishing
-from django.http import HttpResponse
+from pathlib import Path
+import joblib
+from django.shortcuts import render
 
-def home(request):
-    return HttpResponse("<h1>Welcome to the PhishGuard API!</h1>")
+BASE_DIR = Path(__file__).resolve().parent.parent
+MODEL_PATH = BASE_DIR.parent / "ml_model" / "phishing_model.pkl"
+VEC_PATH = BASE_DIR.parent / "ml_model" / "vectorizer.pkl"
 
-@csrf_exempt
-def check_email_phishing(request):
-    if request.method == 'POST':
-        try:
-            # Parse the incoming JSON data
-            data = json.loads(request.body)
-            email_text = data.get('email_text', '')
-            
-            # Validate email_text field
-            if not email_text:
-                return JsonResponse({'error': 'email_text is required'}, status=400)
+model = joblib.load(MODEL_PATH)
+vectorizer = joblib.load(VEC_PATH)
 
-            # Log the received email text
-            print("Received email text:", email_text)
+def detect_url(request):
+    prediction = None
+    prob = None
+    url = ""
 
-            # Detect phishing
-            is_phishing = detect_phishing(email_text)
+    if request.method == "POST":
+        url = request.POST.get("url", "")
+        if url.strip():
+            X_vec = vectorizer.transform([url])
+            pred = model.predict(X_vec)[0]
+            proba = model.predict_proba(X_vec)[0].max()
 
-            # Log the result
-            print("Prediction:", is_phishing)
+            if pred == 1:
+                prediction = "Phishing / Suspicious"
+            else:
+                prediction = "Legitimate / Safe (still be cautious)"
 
-            # Return the result as JSON
-            return JsonResponse({'is_phishing': is_phishing})
+            prob = round(float(proba) * 100, 2)
 
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-
-    return JsonResponse({'error': 'POST method required'}, status=405)
+    return render(request, "detect_url.html", {
+        "prediction": prediction,
+        "prob": prob,
+        "url": url,
+    })
