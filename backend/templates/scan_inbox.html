@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: Arial, sans-serif; background-color: #f5f5f5; color: #333; margin:0; padding:0; }
-        .container { max-width:700px; margin:40px auto; padding:20px; background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+        .container { max-width:900px; margin:40px auto; padding:20px; background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
         h1 { text-align:center; margin-bottom:20px;}
         nav { text-align:center; margin-bottom:20px; }
         nav a { margin:0 10px; text-decoration:none; color:#007BFF;}
@@ -13,7 +13,13 @@
         form input, form button { padding:10px; margin:5px 0; font-size:1em; border-radius:4px; }
         form button { background:#007BFF; color:#fff; border:none; cursor:pointer; }
         form button:hover { background:#0056b3; }
-        ul { padding-left:20px; }
+        table { width:100%; border-collapse: collapse; margin-top:15px; }
+        table th, table td { border:1px solid #ccc; padding:8px; text-align:left; }
+        table th { background-color:#f0f0f0; }
+        .risk-high { color:#721c24; background-color:#f8d7da; }
+        .risk-medium { color:#856404; background-color:#fff3cd; }
+        .risk-low { color:#155724; background-color:#d4edda; }
+        .email-card { margin-bottom:30px; padding:15px; border-radius:6px; border:1px solid #ccc; background-color:#fafafa; }
     </style>
 </head>
 <body>
@@ -33,19 +39,41 @@
         IMAP Server: <input type="text" name="imap_server" value="imap.gmail.com"><br>
         Email: <input type="email" name="email_account"><br>
         App Password: <input type="password" name="app_password"><br>
-        Number of emails: <input type="number" name="num_emails" value="10"><br>
+        Number of emails: <input type="number" name="num_emails" value="5"><br>
         <button type="submit">Scan Inbox</button>
     </form>
 
     {% if results %}
-        <h3>Results</h3>
         {% for email in results %}
-            <p><b>Subject:</b> {{ email.subject }} | <b>Sender:</b> {{ email.sender }} | <b>Email Risk:</b> {{ email.email_risk }}</p>
-            <ul>
-                {% for url in email.urls %}
-                    <li>{{ url.url }} → {{ url.prediction }} ({{ url.prob }}%) → Risk: {{ url.risk }}</li>
-                {% endfor %}
-            </ul>
+            <div class="email-card">
+                <h3>Subject: {{ email.subject }}</h3>
+                <p><b>Sender:</b> {{ email.sender }} | <b>Email Risk:</b> 
+                    <span class="{% if email.email_risk == 'High' %}risk-high{% elif email.email_risk == 'Medium' %}risk-medium{% else %}risk-low{% endif %}">
+                        {{ email.email_risk }}
+                    </span>
+                </p>
+
+                {% if email.urls %}
+                <table>
+                    <tr>
+                        <th>URL</th>
+                        <th>Prediction</th>
+                        <th>Probability (%)</th>
+                        <th>Risk</th>
+                    </tr>
+                    {% for url in email.urls %}
+                    <tr class="{% if url.risk == 'High' %}risk-high{% elif url.risk == 'Medium' %}risk-medium{% else %}risk-low{% endif %}">
+                        <td>{{ url.url }}</td>
+                        <td>{{ url.prediction }}</td>
+                        <td>{{ url.prob }}</td>
+                        <td>{{ url.risk }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                    <p>No URLs detected in this email.</p>
+                {% endif %}
+            </div>
         {% endfor %}
     {% endif %}
 </div>

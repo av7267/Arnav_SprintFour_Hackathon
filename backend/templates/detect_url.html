@@ -100,6 +100,22 @@
                 padding: 15px;
             }
         }
+        /* Add this to the existing CSS */
+        .result table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed; /* ensures table fits container */
+            word-wrap: break-word; /* wraps long URLs or text */
+        }
+
+        .result td, .result th {
+            overflow-wrap: break-word;
+        }
+
+        .table-wrapper {
+            overflow-x: auto; /* horizontal scroll if needed */
+        }
     </style>
 </head>
 <body>
@@ -124,32 +140,34 @@
     
     {% if scan_logs %}
     <h3>Scan Results</h3>
-    <table>
-        <tr>
-            <th>Time</th>
-            <th>URL</th>
-            <th>Prediction</th>
-            <th>Risk</th>
-            <th>Confidence</th>
-            <th>Reasons</th>
-        </tr>
-        {% for log in scan_logs %}
-        <tr>
-            <td>{{ log.timestamp }}</td>
-            <td>{{ log.url }}</td>
-            <td>{{ log.prediction }}</td>
-            <td>{{ log.risk }}</td>
-            <td>{{ log.prob }}%</td>
-            <td>
-                <ul>
-                    {% for r in log.reasons %}
-                    <li>{{ r }}</li>
-                    {% endfor %}
-                </ul>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="table-wrapper">
+        <table>
+            <tr>
+                <th>Time</th>
+                <th>URL</th>
+                <th>Prediction</th>
+                <th>Risk</th>
+                <th>Confidence</th>
+                <th>Reasons</th>
+            </tr>
+            {% for log in scan_logs %}
+            <tr>
+                <td>{{ log.timestamp }}</td>
+                <td>{{ log.url }}</td>
+                <td>{{ log.prediction }}</td>
+                <td>{{ log.risk }}</td>
+                <td>{{ log.prob }}%</td>
+                <td>
+                    <ul>
+                        {% for r in log.reasons %}
+                        <li>{{ r }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
     {% endif %}
 </div>
 </body>

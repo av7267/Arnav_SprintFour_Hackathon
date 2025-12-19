@@ -99,20 +99,27 @@ def detect_url(request):
             pred = model.predict(X_input)[0]
             proba = model.predict_proba(X_input)[0][1]
 
-            prediction = "Phishing / Suspicious" if pred == 1 else "Legitimate / Safe"
-            prob = round(float(proba) * 100, 2)
-            risk = get_risk_level(proba, pred)
+            # Rule-based analysis
             reasons = analyze_url(u)
 
-            # Heuristics should only nudge risk, not override model
-            if reasons and pred == 1 and risk == "Low":
-                risk = "Medium"
+            # Combine ML and rules for final prediction
+            prob_percent = round(float(proba) * 100, 2)
+            if pred == 1 or reasons:
+                if prob_percent >= 50:
+                    prediction = "Phishing"
+                else:
+                    prediction = "Suspicious"
+            else:
+                prediction = "Legitimate"
+
+            # Risk level stays as before
+            risk = get_risk_level(proba, pred)
 
             scan_logs.insert(0, {
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "url": u,
                 "prediction": prediction,
-                "prob": prob,
+                "prob": prob_percent,
                 "risk": risk,
                 "reasons": reasons
             })
