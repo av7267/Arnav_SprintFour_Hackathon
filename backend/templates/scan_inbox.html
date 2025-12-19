@@ -1,0 +1,25 @@
+<h2>Inbox Scan Results</h2>
+
+{% if error %}
+<p style="color:red">{{ error }}</p>
+{% endif %}
+
+<form method="post">{% csrf_token %}
+    IMAP Server: <input type="text" name="imap_server" value="imap.gmail.com"><br>
+    Email: <input type="email" name="email_account"><br>
+    App Password: <input type="password" name="app_password"><br>
+    Number of emails: <input type="number" name="num_emails" value="10"><br>
+    <button type="submit">Scan Inbox</button>
+</form>
+
+{% if results %}
+    <h3>Results</h3>
+    {% for email in results %}
+        <p><b>Subject:</b> {{ email.subject }} | <b>Sender:</b> {{ email.sender }} | <b>Email Risk:</b> {{ email.email_risk }}</p>
+        <ul>
+            {% for url in email.urls %}
+                <li>{{ url.url }} → {{ url.pred }} ({{ url.prob }}%) → Risk: {{ url.risk }}</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% endif %}

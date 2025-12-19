@@ -96,43 +96,27 @@
     
     <form method="post">
         {% csrf_token %}
+
         <label>Enter URL to Scan:</label>
         <input type="text" name="url" value="{{ url }}" placeholder="https://example.com/login">
-        <button type="submit">Scan URL</button>
+
+        <label>Paste Email Content:</label>
+        <textarea name="email_text" rows="6" placeholder="Paste the email here">{{ email_text }}</textarea>
+
+        <button type="submit">Scan</button>
     </form>
     
-    {% if prediction %}
-    <div class="result {% if 'Phishing' in prediction %}phishing{% else %}legit{% endif %}">
-        <strong>Result:</strong> {{ prediction }}
-        {% if prob %}
-        <div class="confidence"><strong>Confidence:</strong> {{ prob }}%</div>
-        {% endif %}
-        {% if risk %}
-        <div class="risk"><strong>Risk Level:</strong> {{ risk }}</div>
-        {% endif %}
-    </div>
-
-    {% if reasons %}
-    <div class="reasons">
-        <strong>Reasons for flagging:</strong>
-        <ul>
-            {% for reason in reasons %}
-            <li>{{ reason }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-    {% endif %}
 
     {% if scan_logs %}
-    <h3>Recent Scans</h3>
+    <h3>Scan Results</h3>
     <table>
         <tr>
             <th>Time</th>
             <th>URL</th>
-            <th>Result</th>
+            <th>Prediction</th>
             <th>Risk</th>
             <th>Confidence</th>
+            <th>Reasons</th>
         </tr>
         {% for log in scan_logs %}
         <tr>
@@ -141,6 +125,13 @@
             <td>{{ log.prediction }}</td>
             <td>{{ log.risk }}</td>
             <td>{{ log.prob }}%</td>
+            <td>
+                <ul>
+                    {% for r in log.reasons %}
+                    <li>{{ r }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
         </tr>
         {% endfor %}
     </table>

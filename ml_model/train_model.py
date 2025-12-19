@@ -1,9 +1,9 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 import joblib
 from pathlib import Path
+from xgboost import XGBClassifier
 
 # Paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,20 +17,19 @@ df = pd.read_csv(DATA_PATH)
 LABEL_COL = "status"
 df[LABEL_COL] = df[LABEL_COL].map({"legitimate": 0, "phishing": 1})
 
-# Select a small subset of numeric features for hackathon demo
+# Select numeric features
 FEATURES = [
     "length_url",
     "nb_dots",
     "nb_hyphens",
     "nb_at",
     "nb_slash",
-    "nb_qm",       # changed from nb_question_mark
+    "nb_qm",
     "nb_and",
     "nb_percent",
-    "nb_eq"        # changed from nb_equal
+    "nb_eq"
 ]
 
-# Ensure all selected features exist in the dataset
 X = df[FEATURES]
 y = df[LABEL_COL]
 
@@ -43,12 +42,16 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, stratify=y, random_state=42
 )
 
-# Random Forest model
-model = RandomForestClassifier(
-    n_estimators=200,
-    max_depth=20,
-    random_state=42,
-    n_jobs=-1
+# XGBoost model
+model = XGBClassifier(
+    n_estimators=300,
+    max_depth=6,
+    learning_rate=0.05,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    eval_metric="logloss",
+    use_label_encoder=False,
+    random_state=42
 )
 
 # Train the model
@@ -61,4 +64,4 @@ print(classification_report(y_test, y_pred))
 
 # Save trained model
 joblib.dump(model, MODEL_PATH)
-print(f"Random Forest model saved to: {MODEL_PATH}")
+print(f"XGBoost model saved to: {MODEL_PATH}")
